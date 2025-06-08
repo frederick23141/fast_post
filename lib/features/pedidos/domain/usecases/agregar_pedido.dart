@@ -7,9 +7,8 @@ class AgregarPedido {
 
   AgregarPedido(this.repository);
 
-  Future<void> call(PedidoEntity pedido) async {
-    // Código para insertar el pedido
-    await repository.agregarPedido(pedido);
+  Future<int> call(PedidoEntity pedido) async {
+    return await repository.agregarPedido(pedido);
   }
 
   Future<void> debugImprimirPedidos() async {

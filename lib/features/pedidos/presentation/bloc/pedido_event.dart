@@ -16,5 +16,5 @@ class AgregarNuevoPedido extends PedidoEvent {
   const AgregarNuevoPedido(this.pedido);
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [pedido];
 }

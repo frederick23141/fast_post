@@ -13,19 +13,29 @@ void main() {
   final db = AppDatabase();
   final pedidoLocalDatasource = PedidoLocalDatasource(db);
   final pedidoRepository = PedidoRepositoryImpl(pedidoLocalDatasource);
-
   final agregarPedido = AgregarPedido(pedidoRepository);
   final obtenerPedidos = ObtenerPedidos(pedidoRepository);
 
   runApp(
-    BlocProvider(
-      create:
-          (_) => PedidoBloc(
-            agregarPedido: agregarPedido,
-            obtenerPedidos: obtenerPedidos,
-            localDatasource: pedidoLocalDatasource,
-          ),
-      child: MyApp(),
+    MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<AppDatabase>(create: (_) => db),
+        RepositoryProvider<PedidoLocalDatasource>(
+          create: (_) => pedidoLocalDatasource,
+        ),
+        RepositoryProvider<PedidoRepositoryImpl>(
+          create: (_) => pedidoRepository,
+        ),
+      ],
+      child: BlocProvider(
+        create:
+            (_) => PedidoBloc(
+              agregarPedido: agregarPedido,
+              obtenerPedidos: obtenerPedidos,
+              localDatasource: pedidoLocalDatasource,
+            ),
+        child: MyApp(),
+      ),
     ),
   );
 }

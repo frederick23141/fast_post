@@ -18,14 +18,16 @@ class PedidoRepositoryImpl implements PedidoRepository {
   }
 
   @override
-  Future<void> agregarPedido(PedidoEntity pedido) async {
+  Future<int> agregarPedido(PedidoEntity pedido) async {
     final pedidoCompanion = pedido.toCompanion();
     final itemsCompanions = pedido.items.map((i) => i.toCompanion()).toList();
 
-    await localDatasource.insertarPedidoConItems(
+    final idPedido = await localDatasource.insertarPedidoConItems(
       pedidoCompanion,
       itemsCompanions,
     );
+
+    return idPedido;
   }
 
   @override
@@ -44,8 +46,8 @@ class PedidoRepositoryImpl implements PedidoRepository {
               pedidoId: i.pedidoId,
               producto: i.producto,
               tamano: i.tamano,
-              salsas: i.salsas,
-              adiciones: i.adiciones,
+              salsas: i.salsas.split(','),
+              adiciones: i.adiciones.split(','),
             );
           }).toList();
 

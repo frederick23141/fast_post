@@ -1,3 +1,4 @@
+import 'package:fast_post/features/pedidos/data/datasources/pedido_local_datasource.dart';
 import 'package:fast_post/features/pedidos/presentation/bloc/pedido_event.dart';
 import 'package:fast_post/features/pedidos/presentation/screens/pedido_list_screen.dart';
 import 'package:flutter/material.dart';
@@ -58,8 +59,8 @@ class _PedidoFormScreenState extends State<PedidoFormScreen> {
                       pedidoId: 0,
                       producto: producto,
                       tamano: tamano,
-                      salsas: salsas,
-                      adiciones: adiciones,
+                      salsas: [salsas],
+                      adiciones: [adiciones],
                     ),
                   );
                 });
@@ -73,22 +74,56 @@ class _PedidoFormScreenState extends State<PedidoFormScreen> {
     );
   }
 
-  void _guardarPedido() {
-    final pedido = PedidoEntity(fecha: DateTime.now(), items: _items);
+  void _guardarPedido() async {
+    if (_items.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('No hay ítems para guardar')));
+      return;
+    }
 
+    final pedido = PedidoEntity(
+      fecha: DateTime.now(),
+      items: List.from(_items), // clonar la lista actual
+    );
+
+    // Dispara evento para agregar el pedido al BLoC
     context.read<PedidoBloc>().add(AgregarNuevoPedido(pedido));
 
-    setState(() => _items.clear());
+    // Limpiar la lista de ítems en el formulario
+    setState(() {
+      _items.clear();
+    });
 
+    // Mostrar mensaje de éxito
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Pedido guardado')));
+    ).showSnackBar(SnackBar(content: Text('Pedido guardado')));
+
+    // Navegar a la pantalla que lista los pedidos
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => PedidosListScreen()),
     );
   }
 
+  /*
+  void _guardarPedido() async {
+    final localDatasource = RepositoryProvider.of<PedidoLocalDatasource>(
+      context,
+    );
+    await localDatasource.insertarPedidoDePrueba();
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Pedido de prueba guardado')));
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => PedidosListScreen()),
+    );
+  }
+*/
   void _listarPedidos() {
     // Navegar a la lista de pedidos después de guardar
     Navigator.push(

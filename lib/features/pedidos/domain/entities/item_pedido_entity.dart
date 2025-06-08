@@ -1,10 +1,14 @@
+import 'package:drift/drift.dart' as drift;
+import 'package:fast_post/core/database/app_database.dart';
+import 'package:path/path.dart';
+
 class ItemPedidoEntity {
   final int? id;
   final int pedidoId;
   final String producto;
   final String tamano;
-  final String salsas;
-  final String adiciones;
+  final List<String> salsas;
+  final List<String> adiciones;
 
   ItemPedidoEntity({
     this.id,
@@ -20,8 +24,8 @@ class ItemPedidoEntity {
     int? pedidoId,
     String? producto,
     String? tamano,
-    String? salsas,
-    String? adiciones,
+    List<String>? salsas,
+    List<String>? adiciones,
   }) {
     return ItemPedidoEntity(
       id: id ?? this.id,
@@ -30,6 +34,15 @@ class ItemPedidoEntity {
       tamano: tamano ?? this.tamano,
       salsas: salsas ?? this.salsas,
       adiciones: adiciones ?? this.adiciones,
+    );
+  }
+
+  ItemsPedidoCompanion toCompanion() {
+    return ItemsPedidoCompanion(
+      producto: drift.Value(producto),
+      tamano: drift.Value(tamano),
+      salsas: drift.Value(salsas?.join(',') ?? ''),
+      adiciones: drift.Value(adiciones?.join(',') ?? ''),
     );
   }
 }

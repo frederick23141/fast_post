@@ -9,11 +9,11 @@ class PedidoLocalDatasource {
 
   PedidoLocalDatasource(this.db);
 
-  Future<void> insertarPedidoConItems(
+  Future<int> insertarPedidoConItems(
     PedidosCompanion pedido,
     List<ItemsPedidoCompanion> items,
   ) async {
-    await db.transaction(() async {
+    return await db.transaction(() async {
       final pedidoId = await db.into(db.pedidos).insert(pedido);
       final itemsConId =
           items
@@ -27,6 +27,8 @@ class PedidoLocalDatasource {
       log(
         'Pedido con ítems insertado en transacción. ID: $pedidoId, Ítems: ${items.length}',
       );
+
+      return pedidoId; // <-- Retorna aquí el ID generado
     });
   }
 
@@ -50,5 +52,36 @@ class PedidoLocalDatasource {
     }
 
     return resultado;
+  }
+
+  Future<void> insertarPedidoDePrueba() async {
+    final pedidoCompanion = PedidosCompanion(
+      fecha: drift.Value(DateTime.now()),
+    );
+
+    final pedidoId = await db.into(db.pedidos).insert(pedidoCompanion);
+
+    final items = [
+      ItemsPedidoCompanion(
+        pedidoId: drift.Value(pedidoId),
+        producto: drift.Value('Perro caliente'),
+        tamano: drift.Value('Mediano'),
+        salsas: drift.Value('Mostaza'),
+        adiciones: drift.Value('Queso'),
+      ),
+      ItemsPedidoCompanion(
+        pedidoId: drift.Value(pedidoId),
+        producto: drift.Value('Hamburguesa'),
+        tamano: drift.Value('Grande'),
+        salsas: drift.Value('Ketchup'),
+        adiciones: drift.Value('Tocineta'),
+      ),
+    ];
+
+    await db.batch((batch) {
+      batch.insertAll(db.itemsPedido, items);
+    });
+
+    print('Pedido de prueba insertado con id $pedidoId');
   }
 }

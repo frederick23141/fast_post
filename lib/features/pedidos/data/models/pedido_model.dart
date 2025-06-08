@@ -16,8 +16,8 @@ extension ItemPedidoEntityMapper on ItemPedidoEntity {
       pedidoId: Value(pedidoId),
       producto: Value(producto),
       tamano: Value(tamano),
-      salsas: Value(salsas),
-      adiciones: Value(adiciones),
+      salsas: Value(salsas as String),
+      adiciones: Value(adiciones as String),
     );
   }
 }

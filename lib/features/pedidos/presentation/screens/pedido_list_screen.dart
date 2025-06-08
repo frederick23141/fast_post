@@ -1,16 +1,25 @@
-import 'package:fast_post/features/pedidos/presentation/bloc/pedido_event.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fast_post/features/pedidos/presentation/bloc/pedido_bloc.dart';
+import 'package:fast_post/features/pedidos/presentation/bloc/pedido_event.dart';
 import 'package:fast_post/features/pedidos/presentation/bloc/pedido_state.dart';
 import 'package:fast_post/features/pedidos/domain/entities/pedido_entity.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class PedidosListScreen extends StatelessWidget {
+class PedidosListScreen extends StatefulWidget {
+  @override
+  _PedidosListScreenState createState() => _PedidosListScreenState();
+}
+
+class _PedidosListScreenState extends State<PedidosListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Cargar pedidos solo una vez al iniciar la pantalla
+    context.read<PedidoBloc>().add(CargarPedidos());
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Al entrar, disparamos evento para cargar pedidos
-    context.read<PedidoBloc>().add(CargarPedidos());
-
     return Scaffold(
       appBar: AppBar(title: Text('Pedidos Guardados')),
       body: BlocBuilder<PedidoBloc, PedidoState>(
@@ -29,11 +38,8 @@ class PedidosListScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final pedido = pedidos[index];
                 return ListTile(
-                  title: Text('Pedido #${pedido.id}'),
+                  title: Text('Pedido #${pedido.id ?? index + 1}'),
                   subtitle: Text('Fecha: ${pedido.fecha.toLocal()}'),
-                  onTap: () {
-                    // Aquí puedes navegar a la pantalla de detalle si quieres
-                  },
                 );
               },
             );
